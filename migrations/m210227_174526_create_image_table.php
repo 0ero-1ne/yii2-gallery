@@ -21,7 +21,6 @@ class m210227_174526_create_image_table extends Migration
             'status' => $this->string(50),
             'extension' => $this->string(50),
             'image' => $this->string(50),
-            'watermark' => $this->string(50)
         ]);
     }
 
