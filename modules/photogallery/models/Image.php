@@ -19,6 +19,7 @@ use Yii;
  */
 class Image extends \yii\db\ActiveRecord
 {
+    public $watermark;
     /**
      * {@inheritdoc}
      */
@@ -33,7 +34,7 @@ class Image extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title','status','category','watermark'], 'required'],
+            [['title','status','category','watermark','author'], 'required'],
             [['author', 'category', 'title', 'date', 'status', 'extension', 'image', 'watermark'], 'string', 'max' => 50],
         ];
     }

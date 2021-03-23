@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use app\modules\photogallery\models\Category;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\photogallery\models\Image */
@@ -15,14 +17,20 @@ use yii\bootstrap\ActiveForm;
         'layout' => 'default'
     ]); ?>
 
-    <!--?= $form->field($model, 'author')->textInput(['maxlength' => true]) ?-->
-
-    <?= $form->field($model, 'category', ['inputOptions' => ['id' => 'image-category']])->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'author', ['inputOptions' => ['id' => 'image-author']])->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'title', ['inputOptions' => ['id' => 'image-title']])->textInput(['maxlength' => true]) ?>
 
-    <!--?= $form->field($model, 'date')->textInput(['maxlength' => true]) ?-->
+    <?php
+        $categories = Category::find()->all();
+        $items = ArrayHelper::map($categories,'title','title');
+        $options = [
+            'prompt' => 'Select category...',
+        ];
+    ?>
 
+    <?= $form->field($model, 'category', ['inputOptions' => ['id' => 'image-category']])->dropDownList($items, $options) ?>
+    
     <?php
         $items = [
             'guest' => 'Guest',
@@ -53,10 +61,6 @@ use yii\bootstrap\ActiveForm;
     ?>
 
     <?= $form->field($model, 'watermark', ['inputOptions' => ['id' => 'watermark']])->dropDownList($items, $params) ?>
-
-    <!--?= $form->field($model, 'extension')->textInput(['maxlength' => true]) ?-->
-
-    <!--?= $form->field($model, 'image')->textInput(['maxlength' => true]) ?-->
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
