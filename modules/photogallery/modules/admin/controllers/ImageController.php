@@ -8,6 +8,8 @@ use app\modules\photogallery\models\ImageSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
+use app\modules\photogallery\models\Category;
 
 /**
  * ImageController implements the CRUD actions for Image model.
@@ -35,6 +37,10 @@ class ImageController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+
         $searchModel = new ImageSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -52,6 +58,10 @@ class ImageController extends Controller
      */
     public function actionView($id)
     {
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -64,10 +74,99 @@ class ImageController extends Controller
      */
     public function actionCreate()
     {
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+
         $model = new Image();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->load_image = UploadedFile::getInstance($model, 'load_image');
+            $extension = "";
+            if ($model->upload()) {
+                $extension = $model->load_image->extension;
+                $model->extension = $extension;
+                $date = date("d-m-Y H-i-s");
+                $model->date = $date;
+            }
+
+            if ($model->save()) {
+                $model->image = $model->id.".".$extension;
+                if ($model->save()) {
+
+                    if ($model->watermark == "none") {
+                        $model->load_image->saveAs("images/photogallery/{$model->id}.{$extension}");
+                    } else{
+
+                        $image_path = "images/photogallery/".$model->load_image;
+                        $model->load_image->saveAs("images/photogallery/{$model->load_image}");
+                        $size = getimagesize($image_path);
+
+                        switch ($extension) {
+                            case 'jpg':
+                            case 'jpeg':
+                                $img = imagecreatefromjpeg($image_path);
+                            break;
+
+                            case 'png':
+                                $img = imagecreatefrompng($image_path);
+                            break;
+
+                            case 'gif':
+                                $img = imagecreatefromgif($image_path);
+                            break;
+                        }
+
+                        $water = imagecreatefrompng("images/photogallery/watermark.png");
+
+                        $res_width  = $size[0];
+                        $res_height = $size[1];
+
+                        $water_width  = imagesx($water);
+                        $water_height = imagesy($water);
+
+                        $res_img = imagecreatetruecolor($res_width, $res_height);
+                        imagecopyresampled($res_img, $img, 0, 0, 0, 0, $res_width, $res_height, $size[0], $size[1]);
+
+                        switch ($model->watermark) {
+                            case 'right_bot':
+                                imagecopy($res_img, $water, $res_width - $water_width, $res_height - $water_height, 0, 0, $water_width, $water_height);            
+                            break;
+                            
+                            case 'left_bot':
+                                imagecopy($res_img, $water, 0, $res_height - $water_height, 0, 0, $water_width, $water_height);
+                            break;
+
+                            case 'right_top':
+                                imagecopy($res_img, $water, $res_width - $water_width, 0, 0, 0, $water_width, $water_height);
+                            break;
+                            
+                            case 'left_top':
+                                imagecopy($res_img, $water, 0, 0, 0, 0, $water_width, $water_height);
+                            break;
+                        }
+
+                        if ($extension == "gif") {
+                            imagegif($res_img, "images/photogallery/$model->id.$extension", 100);
+                        } else if ($extension == "png") {
+                            imagepng($res_img, "images/photogallery/$model->id.$extension", 9);
+                        } else if ($extension == "jpg" || $extension == "jpeg") {
+                            imagejpeg($res_img, "images/photogallery/$model->id.$extension", 100);
+                        }
+
+                        imagedestroy($water);
+                        imagedestroy($res_img);
+                        unlink($image_path);
+
+                    }
+
+                    $category = Category::findOne(['title' => $model->category]);
+                    $category->count = $category->count + 1;
+                    $category->save();
+        
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }  
+            }
         }
 
         return $this->render('create', [
@@ -84,10 +183,34 @@ class ImageController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model = $this->findModel($id);
+        $model_category = $model->category;
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->status == "" || $model->title == "" || $model->category == "") {
+                Yii::$app->getSession()->setFlash('error','Something missed!');
+            } else{
+                $form_category = $model->category;
+                if ($model->save(false)) {
+                    
+                    if ($model_category !== $form_category) {
+                        $category = Category::findOne(['title' => $model_category]);
+                        $category->count = $category->count - 1;
+                        $category->save();
+
+                        $category = Category::findOne(['title' => $form_category]);
+                        $category->count = $category->count + 1;
+                        $category->save();
+                    }
+
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            }
+            
         }
 
         return $this->render('update', [
@@ -104,7 +227,22 @@ class ImageController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+
+        $model = Image::findOne($id);
+        $category = Category::findOne(['title' => $model->category]);
+        $image_path = $model->image;
+        
+        if ($model->delete()) {
+            $category->count = $category->count - 1;
+            $category->save();
+
+            unlink("images/photogallery/$image_path");
+        }
+
+        Yii::$app->getSession()->setFlash('success','Image was successfuly deleted!');
 
         return $this->redirect(['index']);
     }
@@ -118,6 +256,10 @@ class ImageController extends Controller
      */
     protected function findModel($id)
     {
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+        
         if (($model = Image::findOne($id)) !== null) {
             return $model;
         }

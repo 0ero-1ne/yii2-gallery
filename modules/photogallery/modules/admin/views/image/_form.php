@@ -52,7 +52,7 @@ use yii\helpers\ArrayHelper;
             'left_top' => 'Top left',
             'right_top' => 'Top right',
             'left_bot' => 'Bottom left',
-            'rigth_bot' => 'Bottom right',
+            'right_bot' => 'Bottom right',
         ];
 
         $params = [
@@ -62,10 +62,12 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'watermark', ['inputOptions' => ['id' => 'watermark']])->dropDownList($items, $params) ?>
 
+    <?= $form->field($model, 'load_image', ['inputOptions' => ['id' => 'image-file']])->fileInput() ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
-
+    
 </div>

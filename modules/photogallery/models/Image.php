@@ -3,6 +3,7 @@
 namespace app\modules\photogallery\models;
 
 use Yii;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "image".
@@ -20,6 +21,7 @@ use Yii;
 class Image extends \yii\db\ActiveRecord
 {
     public $watermark;
+    public $load_image;
     /**
      * {@inheritdoc}
      */
@@ -34,8 +36,9 @@ class Image extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title','status','category','watermark','author'], 'required'],
-            [['author', 'category', 'title', 'date', 'status', 'extension', 'image', 'watermark'], 'string', 'max' => 50],
+            [['title','status','category','watermark','author','load_image'], 'required'],
+            [['author','category','title','date','status','extension','image','watermark'],'string', 'max' => 50],
+            [['load_image'], 'file', 'extensions' => 'png, jpg, gif, jpeg'],
         ];
     }
 
@@ -54,6 +57,17 @@ class Image extends \yii\db\ActiveRecord
             'extension' => 'Extension',
             'image' => 'Image',
             'watermark' => 'Watermark position',
+            'load_image' => 'Upload image',
         ];
     }
+
+    public function upload()
+    {
+        if (!$this->validate()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }
