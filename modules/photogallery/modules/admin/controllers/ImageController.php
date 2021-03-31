@@ -145,18 +145,26 @@ class ImageController extends Controller
                                 imagecopy($res_img, $water, 0, 0, 0, 0, $water_width, $water_height);
                             break;
                         }
-
+                        $checkFlag = false;
                         if ($extension == "gif") {
                             imagegif($res_img, "images/photogallery/$model->id.$extension", 100);
+                            $checkFlag = true;
                         } else if ($extension == "png") {
                             imagepng($res_img, "images/photogallery/$model->id.$extension", 9);
+                            $checkFlag = true;
                         } else if ($extension == "jpg" || $extension == "jpeg") {
                             imagejpeg($res_img, "images/photogallery/$model->id.$extension", 100);
+                            $checkFlag = true;
                         }
 
-                        imagedestroy($water);
-                        imagedestroy($res_img);
-                        unlink($image_path);
+                        if ($checkFlag) {
+                            imagedestroy($water);
+                            imagedestroy($res_img);
+                            unlink($image_path);
+                            Yii::$app->getSession()->setFlash('success','Image successfuly saved :)');
+                        } else{
+                            Yii::$app->getSession()->setFlash('error','If you see this message, tell us about it :(');
+                        }
 
                     }
 

@@ -3,6 +3,7 @@
 namespace app\modules\photogallery\modules\admin\controllers;
 
 use Yii;
+use app\modules\photogallery\models\CategoryDeleteForm;
 use app\modules\photogallery\models\Category;
 use app\modules\photogallery\models\CategorySearch;
 use yii\web\Controller;
@@ -17,7 +18,7 @@ class CategoryController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    /*public function behaviors()
     {
         return [
             'verbs' => [
@@ -27,7 +28,7 @@ class CategoryController extends Controller
                 ],
             ],
         ];
-    }
+    }*/
 
     /**
      * Lists all Category models.
@@ -127,10 +128,25 @@ class CategoryController extends Controller
     {
         if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
             return $this->goHome();
-        } else{
-            $this->findModel($id)->delete();
-            return $this->redirect(['index']);
         }
+
+        $category = $this->findModel($id);
+        $model = new CategoryDeleteForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->action === "move" && $model->category === "") {
+                Yii::$app->getSession()->setFlash('error','Category missed!');
+                return $this->redirect(['delete','id' => $id]);
+            } else{
+                echo $model->action."<br />";
+                echo $model->category;
+            }
+        }
+
+        return $this->render('delete', [
+            'model' => $model,
+            'category' => $category,
+        ]);
     }
 
     /**
