@@ -5,6 +5,7 @@ namespace app\modules\photogallery\modules\admin\controllers;
 use Yii;
 use app\modules\photogallery\models\CategoryDeleteForm;
 use app\modules\photogallery\models\Category;
+use app\modules\photogallery\models\Image;
 use app\modules\photogallery\models\CategorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -138,8 +139,43 @@ class CategoryController extends Controller
                 Yii::$app->getSession()->setFlash('error','Category missed!');
                 return $this->redirect(['delete','id' => $id]);
             } else{
-                echo $model->action."<br />";
-                echo $model->category;
+                if ($model->action === "move") {
+                    $query = Image::find()->where(['category' => $category->title])->all();
+                    $q = 0;
+
+                    foreach ($query as $item) {
+                        $item->category = $model->category;
+                        $q++;
+                        $item->update(false);
+                    }
+
+                    $new_category = Category::findOne(['title' => $model->category]);
+                    $new_category->count = $new_category->count + $q;
+                    
+                    if ($new_category->save()) {
+                        $category->delete();
+                        Yii::$app->getSession()->setFlash('success','Images were updated!');
+                        return $this->redirect(['view','id' => $new_category->id]);
+                    }
+
+                } else if ($model->action === "delete") {
+                    $query = Image::find()->where(['category' => $category->title])->all();
+                    $q = 0;
+                    $count = count($query);
+
+                    foreach ($query as $item) {
+                        unlink("images/photogallery/".$item->image);
+                        $item->delete();
+                        $q++;    
+                    }
+
+                    if ($q == $count) {
+                        $category->delete();
+                        Yii::$app->getSession()->setFlash('success','Category and images were deleted!');
+                        return $this->redirect(['/photo/admin/category/index']);
+                    }
+
+                }
             }
         }
 
