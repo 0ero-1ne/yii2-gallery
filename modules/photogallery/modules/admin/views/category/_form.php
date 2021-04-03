@@ -11,7 +11,7 @@ use yii\bootstrap\ActiveForm;
 <div class="category-form">
 
     <?php $form = ActiveForm::begin([
-        'id' => 'w0',
+        'id' => 'category',
         'layout' => 'default'
     ]); ?>
 

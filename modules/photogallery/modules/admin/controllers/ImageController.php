@@ -163,6 +163,8 @@ class ImageController extends Controller
                             unlink($image_path);
                             Yii::$app->getSession()->setFlash('success','Image successfuly saved :)');
                         } else{
+                            unlink($image_path);
+                            Image::findOne(['image' => $model->image])->delete();
                             Yii::$app->getSession()->setFlash('error','If you see this message, tell us about it :(');
                         }
 
@@ -237,22 +239,22 @@ class ImageController extends Controller
     {
         if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
             return $this->goHome();
+        } else {
+            $model = Image::findOne($id);
+            $category = Category::findOne(['title' => $model->category]);
+            $image_path = $model->image;
+            
+            if ($model->delete()) {
+                $category->count = $category->count - 1;
+                $category->save();
+
+                unlink("images/photogallery/$image_path");
+            }
+
+            Yii::$app->getSession()->setFlash('success','Image was successfuly deleted!');
+
+            return $this->redirect(['index']);
         }
-
-        $model = Image::findOne($id);
-        $category = Category::findOne(['title' => $model->category]);
-        $image_path = $model->image;
-        
-        if ($model->delete()) {
-            $category->count = $category->count - 1;
-            $category->save();
-
-            unlink("images/photogallery/$image_path");
-        }
-
-        Yii::$app->getSession()->setFlash('success','Image was successfuly deleted!');
-
-        return $this->redirect(['index']);
     }
 
     /**

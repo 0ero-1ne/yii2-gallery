@@ -7,9 +7,11 @@ use app\modules\photogallery\models\CategoryDeleteForm;
 use app\modules\photogallery\models\Category;
 use app\modules\photogallery\models\Image;
 use app\modules\photogallery\models\CategorySearch;
+use app\modules\photogallery\models\ImageSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\data\Pagination;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
@@ -43,6 +45,7 @@ class CategoryController extends Controller
 
         $searchModel = new CategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->setPagination(['pageSize' => 10]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -203,5 +206,26 @@ class CategoryController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionImages($cat)
+    {
+        if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+            return $this->goHome();
+        }
+        
+        $query = Image::find()->where(['category' => $cat]);
+        $category = Category::findOne(['title' => $cat]);
+        $countQuery = clone $query;
+        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 10]);
+        $models = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+        
+        return $this->render('images',[
+            'category' => $category,
+            'models' => $models,
+            'pages' => $pages,
+        ]);
     }
 }

@@ -14,11 +14,17 @@ $this->title = 'Categories';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="category-index">
+    <style>
+        .category-title{
+            font-weight: bold;
+        }
+    </style>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Category', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Image', ['/photo/admin/image/create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -40,3 +46,16 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     
 </div>
+
+<script type="text/javascript">
+    var tds = document.getElementsByTagName('td');
+    console.log(tds);
+    
+    for (let i = 8; i < tds.length; i++) {
+        if (i % 6 == 2) {
+            let href = "<a href='/photo/admin/category/images?cat=" + tds[i].innerHTML + "' class='category-title'>" + tds[i].innerHTML + "</a>";
+            tds[i].innerHTML = href;
+            
+        }
+    }
+</script>

@@ -60,6 +60,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                //admin module--------------------------------------------
                 '' => '/site/index',
                 'photo/admin' => '/admin',
                 //--------------------------------------------------------
@@ -69,6 +70,7 @@ $config = [
                 'photo/admin/category/view' => '/admin/category/view',
                 'photo/admin/category/update' => '/admin/category/update',
                 'photo/admin/category/delete' => '/admin/category/delete',
+                'photo/admin/category/images' => '/admin/category/images',
                 //--------------------------------------------------------
                 'photo/admin/image' => '/admin/image',
                 'photo/admin/image/index' => 'admin/image/index',
@@ -76,6 +78,10 @@ $config = [
                 'photo/admin/image/view' => '/admin/image/view',
                 'photo/admin/image/update' => '/admin/image/update',
                 'photo/admin/image/delete' => '/admin/image/delete',
+                //--------------------------------------------------------
+                //page module---------------------------------------------
+                'page/<page:\d+>' => '/page/page/index',
+                'page/1' => '/page/page/index',
             ],
         ],
         

@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = 'Update';
     <div class="image-form">
 
 	    <?php $form = ActiveForm::begin([
-	        'id' => 'w0',
+	        'id' => 'image',
 	        'layout' => 'default'
 	    ]); ?>
 
