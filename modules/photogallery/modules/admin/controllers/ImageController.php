@@ -161,6 +161,9 @@ class ImageController extends Controller
                             imagedestroy($water);
                             imagedestroy($res_img);
                             unlink($image_path);
+                            $category = Category::findOne(['title' => $model->category]);
+                            $category->count = $category->count + 1;
+                            $category->save();
                             Yii::$app->getSession()->setFlash('success','Image successfuly saved :)');
                         } else{
                             unlink($image_path);
@@ -169,10 +172,6 @@ class ImageController extends Controller
                         }
 
                     }
-
-                    $category = Category::findOne(['title' => $model->category]);
-                    $category->count = $category->count + 1;
-                    $category->save();
         
                     return $this->redirect(['view', 'id' => $model->id]);
                 }  

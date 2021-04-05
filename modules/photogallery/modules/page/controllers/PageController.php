@@ -32,14 +32,14 @@ class PageController extends Controller
     	$dataProvider = new ActiveDataProvider([
 		    'query' => $query,
 		    'pagination' => [
-		    	'pageSize' => 1,
+		    	'pageSize' => 10,
 		    	'forcePageParam' => false,
 		    	'pageSizeParam' => false,
 		    ],
 		]);
 
     	$countQuery = clone $query;
-	    $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 1, 'forcePageParam' => false, 'pageSizeParam' => false]);
+	    $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 10, 'forcePageParam' => false, 'pageSizeParam' => false]);
 	    $models = $query->offset($pages->offset)
 	        ->limit($pages->limit)
 	        ->all();
@@ -51,6 +51,43 @@ class PageController extends Controller
         	'models' => $models,
         	'pages' => $pages,
         	'amount' => $countQuery->count(),
+        ]);
+    }
+
+    public function actionCategory($slug)
+    {
+        $category = Category::find()->where(['slug' => $slug])->one();
+
+        if (Yii::$app->user->isGuest) {
+            $query = Image::find()->where(['status' => 'guest'])->andWhere(['category' => $category->title])->orderBy('title');
+        } else if (Yii::$app->user->identity->username == "demo") {
+            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->andWhere(['category' => $category->title])->orderBy('title');
+        } else if (Yii::$app->user->identity->username == "admin") {
+            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->andWhere(['category' => $category->title])->orderBy('title');
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 10,
+                'forcePageParam' => false,
+                'pageSizeParam' => false,
+            ],
+        ]);
+
+        $countQuery = clone $query;
+        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 10, 'forcePageParam' => false, 'pageSizeParam' => false]);
+        $models = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+        $amountModels = count($models);
+
+        return $this->render('category',[
+            'dataProvider' => $dataProvider,
+            'models' => $models,
+            'pages' => $pages,
+            'amount' => $countQuery->count(),
+            'category' => $category,
         ]);
     }
 }

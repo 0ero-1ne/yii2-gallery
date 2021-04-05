@@ -10,14 +10,14 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
 	<style>
 		#container{
-			border: 1px solid white;
+			border: 5px solid black;
 			display: flex;
 			justify-content: space-around;
 			flex-wrap: wrap;
 			padding-top: 20px;
+			border-radius: 30px;
 		}
 		.category-item{
 			cursor: pointer;
@@ -72,11 +72,11 @@
 
 				echo "<div class='category-item'>";
 					if ($img->image == NULL) {
-						echo "<a href='2'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 					} else {
-						echo "<a href='2'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
 					}
-					echo "<span class='span-elem'>$model->title $model->count</span>";
+					echo "<span class='span-elem'><span class='category-title'>$model->title</span> <span class='category-count'>$model->count</span></span>";
 				echo "</div>";
 			}
 		?>
@@ -101,8 +101,14 @@
 	<?php Pjax::end() ?>
 
 	<script type="text/javascript">
-		document.getElementsByClassName('summary')[0].style.display = "none";
-		document.getElementsByClassName('table')[0].style.display = "none";
+		var summary = document.getElementsByClassName('summary');
+
+		if (summary.length == 0) {
+			document.getElementsByClassName('table')[0].style.display = "none";
+		} else if (summary.length > 0) {
+			document.getElementsByClassName('summary')[0].style.display = "none";
+			document.getElementsByClassName('table')[0].style.display = "none";
+		}
 	</script>
 </body>
 </html>
