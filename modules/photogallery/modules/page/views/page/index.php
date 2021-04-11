@@ -52,7 +52,6 @@
 <body>
 
 	<h1>Categories</h1>
-	<h3>Amount number of categories: <?= $amount ?></h3>
 
 	<?php
 		if (!count($models)) {
@@ -72,9 +71,9 @@
 
 				echo "<div class='category-item'>";
 					if ($img->image == NULL) {
-						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 					} else {
-						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
 					}
 					echo "<span class='span-elem'><span class='category-title'>$model->title</span> <span class='category-count'>$model->count</span></span>";
 				echo "</div>";

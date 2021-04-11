@@ -50,7 +50,6 @@ class PageController extends Controller
         	'dataProvider' => $dataProvider,
         	'models' => $models,
         	'pages' => $pages,
-        	'amount' => $countQuery->count(),
         ]);
     }
 
@@ -86,7 +85,6 @@ class PageController extends Controller
             'dataProvider' => $dataProvider,
             'models' => $models,
             'pages' => $pages,
-            'amount' => $countQuery->count(),
             'category' => $category,
         ]);
     }

@@ -83,7 +83,7 @@ $config = [
                 'page/<page:\d+>' => '/page/page/index',
                 'page/1' => '/page/page/index',
                 'page/category/<slug:[\w\-]+>/<page:\d+>' => '/page/page/category',
-                'page/category/<slug:[\w\-]+>/1' => '/page/page/category',
+                'page/category/<slug:[\w\-]+>' => '/page/page/category',
             ],
         ],
         
