@@ -16,7 +16,7 @@
 				border-radius: 30px;
 			}
 
-			.image-item{
+			.small-image{
 				cursor: pointer;
 				width: 200px;
 				margin-bottom: 20px;
@@ -24,7 +24,7 @@
 				border: 1px solid black;
 			}
 
-			.small-image{
+			.grid-img{
 				width: 198px;
 				height: 198px;
 				display: block;
@@ -53,9 +53,9 @@
 	<?php
 		}
 		foreach ($models as $model) {
-			echo "<div class='image-item'>";
+			echo "<div class='small-image'>";
 				echo "<a class='image-href' href='/images/photogallery/$model->image' data-caption='$model->title' title='$model->title'>";
-					echo "<img src='/images/photogallery/$model->image' class='small-image'/>";
+					echo "<img src='/images/photogallery/$model->image' class='grid-img'/>";
 				echo "</a>";
 			echo "</div>";
 		}
@@ -68,7 +68,7 @@
     'pager' => [
         'class' => \kop\y2sp\ScrollPager::className(),
         'container' => '#gallery',
-        'item' => '.image-item',
+        'item' => '.small-image',
         'paginationSelector' => '.grid-view .pagination',
         'triggerTemplate' => '<tr class="ias-trigger"><td colspan="100%" style="text-align: center"><a style="cursor: pointer">{text}</a></td></tr>',
         //'noneLeftText' => '<h2>Nothing more</h2>',

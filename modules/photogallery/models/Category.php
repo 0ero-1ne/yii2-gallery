@@ -33,6 +33,8 @@ class Category extends \yii\db\ActiveRecord
             [['count'], 'integer'],
             [['title', 'slug', 'status'], 'string', 'max' => 50],
             ['slug','match','pattern' => '/^[a-zA-Z0-9\-_]+$/'],
+            ['title','unique','targetClass' => 'app\modules\photogallery\models\Category'],
+            ['slug','unique','targetClass' => 'app\modules\photogallery\models\Category'],
         ];
     }
 

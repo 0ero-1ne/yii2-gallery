@@ -111,9 +111,19 @@ class CategoryController extends Controller
         }
 
         $model = $this->findModel($id);
+        $images = Image::find()->where(['category' => $model->title])->all();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $new_category = $model->title;
+
+            foreach ($images as $image) {
+                $image->category = $new_category;
+                $image->update(false);
+            }
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -138,7 +148,7 @@ class CategoryController extends Controller
         $model = new CategoryDeleteForm();
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->action === "move" && $model->category === "") {
+            if (($model->action === "move" && $model->category === "") || ($model->action === "move" && $model->category === $category->title)) {
                 Yii::$app->getSession()->setFlash('error','Category missed!');
                 return $this->redirect(['delete','id' => $id]);
             } else{

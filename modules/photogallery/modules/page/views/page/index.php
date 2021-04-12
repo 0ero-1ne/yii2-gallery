@@ -19,7 +19,7 @@
 			padding-top: 20px;
 			border-radius: 30px;
 		}
-		.category-item{
+		.category-title{
 			cursor: pointer;
 			border: 1px solid black;
 			width: 200px;
@@ -47,6 +47,11 @@
 			font-size: 20px;
 			opacity: 85%;
 		}
+
+		.span-elem a{
+			color: white;
+			text-decoration: none;
+		}
 	</style>
 </head>
 <body>
@@ -69,13 +74,13 @@
 			foreach ($models as $model) {
 				$img = Image::find()->where(['category' => $model->title])->orderBy('id DESC')->one();
 
-				echo "<div class='category-item'>";
+				echo "<div class='category-title'>";
 					if ($img->image == NULL) {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 					} else {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
 					}
-					echo "<span class='span-elem'><span class='category-title'>$model->title</span> <span class='category-count'>$model->count</span></span>";
+					echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$model->count</span></a></span>";
 				echo "</div>";
 			}
 		?>
@@ -87,7 +92,7 @@
 	    'pager' => [
 	        'class' => \kop\y2sp\ScrollPager::className(),
 	        'container' => '#container',
-	        'item' => '.category-item',
+	        'item' => '.category-title',
 	        'paginationSelector' => '.grid-view .pagination',
 	        'triggerTemplate' => '<tr class="ias-trigger"><td colspan="100%" style="text-align: center"><a style="cursor: pointer">{text}</a></td></tr>',
 	        //'noneLeftText' => '<h2>Nothing more</h2>',

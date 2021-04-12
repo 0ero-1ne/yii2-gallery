@@ -65,6 +65,15 @@ $this->params['breadcrumbs'][] = 'Delete';
     document.getElementById('category-action').setAttribute('onchange','output()');
     document.getElementsByClassName('control-label')[1].style.display = "none";
 
+    var items = document.getElementById('category-to-move').options;
+    var bad_category = "<?= $category->title ?>";
+    
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].value === bad_category) {
+            items[i].style.display = "none";
+        }
+    }
+
     function output(){
         let n = document.getElementById('category-action').options.selectedIndex;
         let item = document.getElementById('category-action').options[n].value;

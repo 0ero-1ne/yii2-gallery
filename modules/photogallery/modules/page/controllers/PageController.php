@@ -22,11 +22,11 @@ class PageController extends Controller
     {
     	//Yii::$app->user->identity->username == "demo"
     	if (Yii::$app->user->isGuest) {
-    		$query = Category::find()->where(['status' => 'guest'])->orderBy('title');
+    		$query = Category::find()->where(['status' => 'guest'])->orderBy('id');
     	} else if (Yii::$app->user->identity->username == "demo") {
-    		$query = Category::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orderBy('title');
+    		$query = Category::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orderBy('id');
     	} else if (Yii::$app->user->identity->username == "admin") {
-    		$query = Category::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->orderBy('title');
+    		$query = Category::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->orderBy('id');
     	}
     	
     	$dataProvider = new ActiveDataProvider([
@@ -58,11 +58,11 @@ class PageController extends Controller
         $category = Category::find()->where(['slug' => $slug])->one();
 
         if (Yii::$app->user->isGuest) {
-            $query = Image::find()->where(['status' => 'guest'])->andWhere(['category' => $category->title])->orderBy('title');
+            $query = Image::find()->where(['status' => 'guest'])->andWhere(['category' => $category->title])->orderBy('id');
         } else if (Yii::$app->user->identity->username == "demo") {
-            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->andWhere(['category' => $category->title])->orderBy('title');
+            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->andWhere(['category' => $category->title])->orderBy('id');
         } else if (Yii::$app->user->identity->username == "admin") {
-            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->andWhere(['category' => $category->title])->orderBy('title');
+            $query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->andWhere(['category' => $category->title])->orderBy('id');
         }
 
         $dataProvider = new ActiveDataProvider([
