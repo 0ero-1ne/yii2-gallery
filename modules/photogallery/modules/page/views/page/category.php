@@ -96,7 +96,7 @@
 	var strt_page = <?= $page ?>, slug = '<?= $category->slug?>';
 
 	if (strt_page == 1) {
-		window.history.pushState({page: strt_page},'','/page/category/'+slug+'/'+strt_page);
+		window.history.replaceState(null,'','/page/category/'+slug+'/'+strt_page);
 	}
 
 	window.addEventListener('load', function() {
@@ -119,7 +119,7 @@
 			strt_page = fin_page - 2;
 			fin_page = strt_page;
 			console.log(strt_page);
-			window.history.pushState({page: strt_page},'',''+strt_page);
+			window.history.replaceState(null,'',''+strt_page);
 		}
 	});
 </script>

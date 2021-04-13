@@ -69,14 +69,14 @@ class PageController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 1,
+                'pageSize' => 10,
                 'forcePageParam' => false,
                 'pageSizeParam' => false,
             ],
         ]);
 
         $countQuery = clone $query;
-        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 1, 'forcePageParam' => false, 'pageSizeParam' => false]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 10, 'forcePageParam' => false, 'pageSizeParam' => false]);
         $models = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->all();

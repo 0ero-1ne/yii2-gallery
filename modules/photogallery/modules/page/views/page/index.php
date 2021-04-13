@@ -76,9 +76,9 @@
 
 				echo "<div class='category-title'>";
 					if ($img->image == NULL) {
-						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 					} else {
-						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
 					}
 					echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$model->count</span></a></span>";
 				echo "</div>";
@@ -123,7 +123,7 @@
 				strt_page = fin_page - 2;
 				fin_page = strt_page;
 				console.log(strt_page);
-				window.history.pushState({page: strt_page},'',''+strt_page);
+				window.history.pushState(null,'',''+strt_page);
 			}
 		});
 
