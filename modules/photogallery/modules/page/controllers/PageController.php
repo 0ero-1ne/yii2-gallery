@@ -18,7 +18,7 @@ class PageController extends Controller
      * Renders the index view for the module
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($page)
     {
     	//Yii::$app->user->identity->username == "demo"
     	if (Yii::$app->user->isGuest) {
@@ -50,10 +50,11 @@ class PageController extends Controller
         	'dataProvider' => $dataProvider,
         	'models' => $models,
         	'pages' => $pages,
+            'page' => $page,
         ]);
     }
 
-    public function actionCategory($slug)
+    public function actionCategory($slug, $page = 1)
     {
         $category = Category::find()->where(['slug' => $slug])->one();
 
@@ -68,14 +69,14 @@ class PageController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 10,
+                'pageSize' => 1,
                 'forcePageParam' => false,
                 'pageSizeParam' => false,
             ],
         ]);
 
         $countQuery = clone $query;
-        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 10, 'forcePageParam' => false, 'pageSizeParam' => false]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 1, 'forcePageParam' => false, 'pageSizeParam' => false]);
         $models = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
@@ -86,6 +87,7 @@ class PageController extends Controller
             'models' => $models,
             'pages' => $pages,
             'category' => $category,
+            'page' => $page,
         ]);
     }
 }

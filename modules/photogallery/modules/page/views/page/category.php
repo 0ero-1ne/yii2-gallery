@@ -93,6 +93,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js" integrity="sha512-gBBvs+bYCFzQmRAaVhs83VeuEsAepEXy0b9dgL0lPp2JEGKwJGD22XVWFg9mRrkSiKCMyfaRNMlInr2RpNTD4w==" crossorigin="anonymous"></script>
 <script type="text/javascript">
+	var strt_page = <?= $page ?>, slug = '<?= $category->slug?>';
+
+	if (strt_page == 1) {
+		window.history.pushState({page: strt_page},'','/page/category/'+slug+'/'+strt_page);
+	}
+
 	window.addEventListener('load', function() {
 		baguetteBox.run('#gallery', {
 			animation: 'fadeIn', // fadeIn or slideIn
@@ -101,11 +107,19 @@
 	});
 </script>
 <script type="text/javascript">
+	var strt_page = <?= $page ?>, fin_page = strt_page;
+
 	$("#gallery").bind("DOMSubtreeModified", function(){
   		baguetteBox.run('#gallery', {
 			animation: 'fadeIn', // fadeIn or slideIn
 			overlayBackgroundColor: 'rgba(0,0,0,1)'
 		});
-		console.log("Hello!");
+		fin_page++;
+		if ((fin_page - strt_page) == 3) {
+			strt_page = fin_page - 2;
+			fin_page = strt_page;
+			console.log(strt_page);
+			window.history.pushState({page: strt_page},'',''+strt_page);
+		}
 	});
 </script>
