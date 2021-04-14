@@ -75,7 +75,7 @@
 				$img = Image::find()->where(['category' => $model->title])->orderBy('id DESC')->one();
 
 				echo "<div class='category-title'>";
-					if ($img->image == NULL) {
+					if ($img->image == "") {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 					} else {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
