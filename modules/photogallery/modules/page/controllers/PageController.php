@@ -57,6 +57,19 @@ class PageController extends Controller
     public function actionCategory($slug, $page = 1)
     {
         $category = Category::find()->where(['slug' => $slug])->one();
+        if (!$category) {
+            return $this->redirect(['/page/1']);
+        }
+
+        if ($category->status == "user") {
+            if (Yii::$app->user->isGuest) {
+                return $this->redirect(['/page/1']);
+            }
+        } else if ($category->status == "admin") {
+            if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
+                return $this->redirect(['/page/1']);
+            }
+        }
 
         if (Yii::$app->user->isGuest) {
             $query = Image::find()->where(['status' => 'guest'])->andWhere(['category' => $category->title])->orderBy('id');

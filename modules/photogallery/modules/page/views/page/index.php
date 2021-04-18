@@ -4,6 +4,7 @@
 	use app\modules\photogallery\models\Image;
 	use yii\widgets\LinkPager;
 	use yii\widgets\Pjax;
+	use yii\widgets\ListView;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,15 +73,26 @@
 		<?php
 			}
 			foreach ($models as $model) {
-				$img = Image::find()->where(['category' => $model->title])->orderBy('id DESC')->one();
+				if (Yii::$app->user->isGuest) {
+					$query = Image::find()->where(['status' => 'guest'])->andWhere(['category' => $model->title]);
+				} else if (Yii::$app->user->identity->username == "demo") {
+					$query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->andWhere(['category' => $model->title]);
+				} else if (Yii::$app->user->identity->username == "admin") {
+					$query = Image::find()->where(['status' => 'guest'])->orWhere(['status' => 'user'])->orWhere(['status' => 'admin'])->andWhere(['category' => $model->title]);
+				}
+				$countQuery = clone $query;
+				$amount = $countQuery->count();
+
+				$img = $query->orderBy('id DESC')->one();
 
 				echo "<div class='category-title'>";
-					if ($img->image == "") {
+					if ($img == NULL) {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
+						echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$model->count</span></a></span>";
 					} else {
 						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
+						echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$amount</span></a></span>";
 					}
-					echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$model->count</span></a></span>";
 				echo "</div>";
 			}
 		?>
@@ -95,7 +107,6 @@
 	        'item' => '.category-title',
 	        'paginationSelector' => '.grid-view .pagination',
 	        'triggerTemplate' => '<tr class="ias-trigger"><td colspan="100%" style="text-align: center"><a style="cursor: pointer">{text}</a></td></tr>',
-	        //'noneLeftText' => '<h2>Nothing more</h2>',
 	        'enabledExtensions'  => [
 		        \kop\y2sp\ScrollPager::EXTENSION_SPINNER,
 		        //\kop\y2sp\ScrollPager::EXTENSION_NONE_LEFT,
@@ -115,15 +126,15 @@
 	</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script type="text/javascript">
-		var strt_page = <?= $page ?>, fin_page = strt_page;
+		var strt_page = <?= $page ?>, fin_page = strt_page, page = <?= $page ?>;
 
 		$("#container").bind("DOMSubtreeModified", function(){
 			fin_page++;
-			if ((fin_page - strt_page) == 3) {
+			console.log(fin_page);
+			if ((fin_page - strt_page) == 4) {
 				strt_page = fin_page - 2;
 				fin_page = strt_page;
-				console.log(strt_page);
-				window.history.pushState(null,'',''+strt_page);
+				window.history.pushState(null,'',''+fin_page);
 			}
 		});
 

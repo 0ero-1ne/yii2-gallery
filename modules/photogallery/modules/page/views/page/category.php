@@ -33,6 +33,9 @@
 			}
 	</style>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.css" integrity="sha512-pkvU4cxjSBpmI2BIthq5ADwB7UIQO9SKhKSAcuAwQSDpQdFUoVW5h05u0gNDmN/0nZJpL1KRvdhmgAh0gL96hQ==" crossorigin="anonymous" />
+	<script type="text/javascript">
+		window.history.pushState(null,'','/page/category/<?= $category->slug ?>/<?= $page ?>');
+	</script>
 </head>
 
 <p>
@@ -92,13 +95,8 @@
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js" integrity="sha512-gBBvs+bYCFzQmRAaVhs83VeuEsAepEXy0b9dgL0lPp2JEGKwJGD22XVWFg9mRrkSiKCMyfaRNMlInr2RpNTD4w==" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
-	var strt_page = <?= $page ?>, slug = '<?= $category->slug?>';
-
-	if (strt_page == 1) {
-		window.history.replaceState(null,'','/page/category/'+slug+'/'+strt_page);
-	}
-
 	window.addEventListener('load', function() {
 		baguetteBox.run('#gallery', {
 			animation: 'fadeIn', // fadeIn or slideIn
@@ -106,20 +104,39 @@
 		});
 	});
 </script>
+
 <script type="text/javascript">
-	var strt_page = <?= $page ?>, fin_page = strt_page;
+	var strt_page = <?= $page ?>, fin_page = strt_page, page = <?= $page ?>;
 
 	$("#gallery").bind("DOMSubtreeModified", function(){
   		baguetteBox.run('#gallery', {
 			animation: 'fadeIn', // fadeIn or slideIn
 			overlayBackgroundColor: 'rgba(0,0,0,1)'
 		});
-		fin_page++;
-		if ((fin_page - strt_page) == 3) {
-			strt_page = fin_page - 2;
-			fin_page = strt_page;
-			console.log(strt_page);
-			window.history.replaceState(null,'',''+strt_page);
+
+		var img_divs = document.getElementsByClassName("small-image");
+		
+		for (let i = 0; i < img_divs.length; i++) {
+			if (i % 10 == 0) {
+				if (!img_divs[i].hasAttribute("page-key")) {
+					img_divs[i].setAttribute("page-key",page);
+					page++;
+				}
+			}
 		}
 	});
+
+	var max_page = <?= $page ?>;
+	var windowHeight = $(window).height();
+
+	$(document).on('scroll', function(){
+		$(".small-image[page-key]").each(function(){
+    		var self = $(this), height = self.offset().top + self.height();
+    		if ($(document).scrollTop() + windowHeight >= height) {
+    			var num_page = self[0].getAttribute("page-key");
+				window.history.pushState(null,'',''+num_page);
+    		}
+    	});
+	});
+
 </script>
