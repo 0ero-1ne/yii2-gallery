@@ -87,10 +87,10 @@
 
 				echo "<div class='category-title'>";
 					if ($img == NULL) {
-						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/No image.png' class='category-image'/></a>";
 						echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$model->count</span></a></span>";
 					} else {
-						echo "<a href='/page/category/$model->slug'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
+						echo "<a href='/page/category/$model->slug/1'><img src='/images/photogallery/$img->image' class='category-image'/></a>";
 						echo "<span class='span-elem'><a href='/page/category/$model->slug'><span class='category'>$model->title</span> <span class='category-count'>$amount</span></a></span>";
 					}
 				echo "</div>";
@@ -99,20 +99,22 @@
 	</div>
 
 	<?php Pjax::begin() ?>
-	<?= GridView::widget([
-	    'dataProvider' => $dataProvider,
-	    'pager' => [
-	        'class' => \kop\y2sp\ScrollPager::className(),
-	        'container' => '#container',
-	        'item' => '.category-title',
-	        'paginationSelector' => '.grid-view .pagination',
-	        'triggerTemplate' => '<tr class="ias-trigger"><td colspan="100%" style="text-align: center"><a style="cursor: pointer">{text}</a></td></tr>',
-	        'enabledExtensions'  => [
-		        \kop\y2sp\ScrollPager::EXTENSION_SPINNER,
-		        //\kop\y2sp\ScrollPager::EXTENSION_NONE_LEFT,
-    		],
-	    ],
-	]); ?>
+	<?=  
+		GridView::widget([
+		    'dataProvider' => $dataProvider,
+		    'pager' => [
+		        'class' => \kop\y2sp\ScrollPager::className(),
+		        'container' => '#container',
+		        'item' => '.category-title',
+		        'paginationSelector' => '.grid-view .pagination',
+		        'triggerText' => Yii::t('app', 'Show more'),
+	        	'triggerTemplate' => '<span class="reveal-btn"><a style="cursor: pointer;" id="showMore">{text}</a></span>',
+	          	'triggerOffset'=>$dataProvider->totalCount/$dataProvider->pagination->pageSize,
+	          	'noneLeftText' => '',
+          		'noneLeftTemplate' => '',
+		    ],
+		]);
+	?>
 	<?php Pjax::end() ?>
 	<script type="text/javascript">
 		var summary = document.getElementsByClassName('summary');
@@ -125,19 +127,5 @@
 		}
 	</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script type="text/javascript">
-		var strt_page = <?= $page ?>, fin_page = strt_page, page = <?= $page ?>;
-
-		$("#container").bind("DOMSubtreeModified", function(){
-			fin_page++;
-			console.log(fin_page);
-			if ((fin_page - strt_page) == 4) {
-				strt_page = fin_page - 2;
-				fin_page = strt_page;
-				window.history.pushState(null,'',''+fin_page);
-			}
-		});
-
-	</script>
 </body>
 </html>

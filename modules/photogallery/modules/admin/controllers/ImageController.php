@@ -95,6 +95,7 @@ class ImageController extends Controller
                 if ($model->save()) {
 
                     if ($model->watermark == "none") {
+                        Yii::$app->getSession()->setFlash('success','Image successfuly saved :)');
                         $model->load_image->saveAs("images/photogallery/{$model->id}.{$extension}");
                     } else{
 

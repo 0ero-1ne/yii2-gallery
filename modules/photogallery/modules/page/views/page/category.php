@@ -4,6 +4,7 @@
 	use app\modules\photogallery\models\Image;
 	use yii\widgets\LinkPager;
 	use yii\widgets\Pjax;
+	use kop\y2sp\ScrollPager;
 ?>
 <head>
 	<style>
@@ -31,11 +32,15 @@
 				border-left: none;
 				border-top: none;
 			}
+
+			.no_images{
+				width: 200px;
+				padding-top: 80px;
+				text-align: center;
+				font-size: 20px;
+			}
 	</style>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.css" integrity="sha512-pkvU4cxjSBpmI2BIthq5ADwB7UIQO9SKhKSAcuAwQSDpQdFUoVW5h05u0gNDmN/0nZJpL1KRvdhmgAh0gL96hQ==" crossorigin="anonymous" />
-	<script type="text/javascript">
-		window.history.pushState(null,'','/page/category/<?= $category->slug ?>/<?= $page ?>');
-	</script>
 </head>
 
 <p>
@@ -66,21 +71,21 @@
 </div>
 
 <?php Pjax::begin() ?>
-<?= GridView::widget([
-    'dataProvider' => $dataProvider,
-    'pager' => [
-        'class' => \kop\y2sp\ScrollPager::className(),
-        'container' => '#gallery',
-        'item' => '.small-image',
-        'paginationSelector' => '.grid-view .pagination',
-        'triggerTemplate' => '<tr class="ias-trigger"><td colspan="100%" style="text-align: center"><a style="cursor: pointer">{text}</a></td></tr>',
-        //'noneLeftText' => '<h2>Nothing more</h2>',
-        'enabledExtensions'  => [
-	        \kop\y2sp\ScrollPager::EXTENSION_SPINNER,
-	        //\kop\y2sp\ScrollPager::EXTENSION_NONE_LEFT,
-		],
-    ],
-]); ?>
+	<?=  
+		GridView::widget([
+		    'dataProvider' => $dataProvider,
+		    'pager' => [
+			    'class' => \kop\y2sp\ScrollPager::className(),
+			    'container' => '#gallery',
+			    'item' => '.small-image',
+			    'paginationSelector' => '.grid-view .pagination',
+			    'triggerText' => Yii::t('app', 'Show more'),
+	          	'triggerTemplate' => '<span class="reveal-btn"><a style="cursor: pointer;" id="showMore">{text}</a></span>',
+	          	'triggerOffset'=>$dataProvider->totalCount/$dataProvider->pagination->pageSize,
+	          	'noneLeftText' => '<div class="no_images">No more images</div>',
+		    ],
+		]);
+	?>
 <?php Pjax::end() ?>
 
 <script type="text/javascript">
@@ -93,8 +98,10 @@
 		document.getElementsByClassName('table')[0].style.display = "none";
 	}
 </script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.0/baguetteBox.min.js" integrity="sha512-gBBvs+bYCFzQmRAaVhs83VeuEsAepEXy0b9dgL0lPp2JEGKwJGD22XVWFg9mRrkSiKCMyfaRNMlInr2RpNTD4w==" crossorigin="anonymous"></script>
+
 
 <script type="text/javascript">
 	window.addEventListener('load', function() {
@@ -106,37 +113,13 @@
 </script>
 
 <script type="text/javascript">
-	var strt_page = <?= $page ?>, fin_page = strt_page, page = <?= $page ?>;
-
+	
 	$("#gallery").bind("DOMSubtreeModified", function(){
   		baguetteBox.run('#gallery', {
 			animation: 'fadeIn', // fadeIn or slideIn
 			overlayBackgroundColor: 'rgba(0,0,0,1)'
 		});
-
-		var img_divs = document.getElementsByClassName("small-image");
-		
-		for (let i = 0; i < img_divs.length; i++) {
-			if (i % 10 == 0) {
-				if (!img_divs[i].hasAttribute("page-key")) {
-					img_divs[i].setAttribute("page-key",page);
-					page++;
-				}
-			}
-		}
-	});
-
-	var max_page = <?= $page ?>;
-	var windowHeight = $(window).height();
-
-	$(document).on('scroll', function(){
-		$(".small-image[page-key]").each(function(){
-    		var self = $(this), height = self.offset().top + self.height();
-    		if ($(document).scrollTop() + windowHeight >= height) {
-    			var num_page = self[0].getAttribute("page-key");
-				window.history.pushState(null,'',''+num_page);
-    		}
-    	});
 	});
 
 </script>
+

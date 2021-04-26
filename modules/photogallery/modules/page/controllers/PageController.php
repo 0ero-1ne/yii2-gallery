@@ -14,6 +14,14 @@ use yii\data\ActiveDataProvider;
  */
 class PageController extends Controller
 {
+    public function actions()
+    {
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ],
+        ];
+    }
     /**
      * Renders the index view for the module
      * @return string
@@ -58,16 +66,16 @@ class PageController extends Controller
     {
         $category = Category::find()->where(['slug' => $slug])->one();
         if (!$category) {
-            return $this->redirect(['/page/1']);
+            throw new \yii\web\HttpException(404,'Page not found!');
         }
 
         if ($category->status == "user") {
             if (Yii::$app->user->isGuest) {
-                return $this->redirect(['/page/1']);
+                throw new \yii\web\HttpException(403,'You do not have the right to access this page!');
             }
         } else if ($category->status == "admin") {
             if (Yii::$app->user->isGuest || Yii::$app->user->identity->username == "demo") {
-                return $this->redirect(['/page/1']);
+                throw new \yii\web\HttpException(403,'You do not have the right to access this page!');
             }
         }
 
@@ -103,4 +111,5 @@ class PageController extends Controller
             'page' => $page,
         ]);
     }
+
 }
